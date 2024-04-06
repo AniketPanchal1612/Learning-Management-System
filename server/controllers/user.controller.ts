@@ -17,7 +17,7 @@ interface IRegisterBody{
     avatar?:string,
 }
 
-
+// exports.registerUser = AsyncErrorHandler(async(req:Request, res:Response,next:NextFunction)=>{
 export const registerUser = AsyncErrorHandler(async(req:Request, res:Response,next:NextFunction)=>{
 
     try {
@@ -87,3 +87,47 @@ export const createActivationToken=(user:any) : IActivationToken=>{
 
     return {token,activationCode}
 }
+
+
+
+
+// user activation code verify and store in db
+interface IActivationRequest{
+    activation_token:string,
+    activation_code:string
+}
+
+
+export const activateUser = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {activation_token, activation_code} = req.body as IActivationRequest
+
+        //jwt token verify and give user and activationCode both
+        const newUser: {user:IUser, activationCode:string}= jwt.verify(
+            activation_token,
+            process.env.ACTIVATION_SECRET as string,
+        ) as {user:IUser, activationCode:string}
+
+        console.log(newUser)
+        // check otp
+        if(newUser.activationCode !== activation_code){
+            return next(new ErrorHandler('Invalid activation code',400));
+        }
+
+        const {name,email,password} = newUser.user;
+
+        const existUser =await  userModel.findOne({email});
+
+            if(existUser){
+                return next(new ErrorHandler('Email already exist',400));
+            }
+
+        const user = await userModel.create({
+            name,email,password
+        })
+
+        res.status(201).json({success:true})
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+})

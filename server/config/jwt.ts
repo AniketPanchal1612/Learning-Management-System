@@ -35,7 +35,7 @@ const accessTokenExpire = parseInt(
     expires: new Date(Date.now() + refreshTokenExpire * 24 * 60 * 60 * 1000),
     maxAge: refreshTokenExpire * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "lax",        
   };
 
 export const sendToken = (user: IUser, statusCode: number, res: Response) => {

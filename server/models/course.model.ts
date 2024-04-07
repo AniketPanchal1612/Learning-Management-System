@@ -72,7 +72,7 @@ const courseDataSchema: Schema<ICourseData> = new mongoose.Schema({
     title: String,
     description: String,
     videoUrl: String,
-    videoThumbnail: Object,
+    // videoThumbnail: Object,
     videoSection: String,
     videoLength: Number,
     videoPlayer: String,
@@ -102,11 +102,11 @@ const courseSchema: Schema<ICourse> = new mongoose.Schema({
     thumbnail: {
         public_id: {
             type: String,
-            required: true
+            // required: true
         },
         url: {
             type: String,
-            required: true
+            // required: true
         }
     },
     tags: {

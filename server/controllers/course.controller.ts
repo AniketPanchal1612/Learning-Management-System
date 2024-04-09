@@ -4,6 +4,7 @@ import { NextFunction, Request, Response } from 'express'
 import ErrorHandler from '../config/errorHandler'
 import { createCourse } from '../services/course.service'
 import courseModel from '../models/course.model'
+import { redis } from '../config/redis'
 
 
 //upload course
@@ -62,3 +63,64 @@ export const editCourse = AsyncErrorHandler(async (req: Request, res: Response, 
     }
 
 })
+
+
+//get single course - without purchase
+
+export const getSingleCourse =  AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
+try {
+
+    const courseId = req.params.id;
+    const isCacheExist = await redis.get(courseId);
+
+    if(isCacheExist){
+        const course = JSON.parse(isCacheExist)
+        res.status(201).json({
+            success:true,
+            course
+        })
+    }else{
+
+        
+        const course = await courseModel.findById(req.params.id).select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links')  
+        await redis.set(courseId,JSON.stringify(course))
+        res.status(201).json({
+            success:true,
+            course
+        })
+    }
+        
+} catch (error: any) {
+    return next(new ErrorHandler(error.message, 400))
+}
+
+})
+
+// get all courses - without purchase
+export const getAllCourse =  AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const isCached = await redis.get("allCourses")
+        if(isCached){
+            const courses = JSON.parse(isCached)
+            res.status(201).json({
+                success:true,
+                courses
+            })
+
+        }
+        else{
+
+            const courses = await courseModel.find().select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links')  
+            await redis.set("allCourses",JSON.stringify(courses))
+            res.status(201).json({
+                success:true,
+                courses
+            })
+        }
+            
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400))
+    }
+    
+    })

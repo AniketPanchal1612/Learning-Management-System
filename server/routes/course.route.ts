@@ -1,5 +1,5 @@
 import express from 'express'
-import { addAnswer, addQuestion, editCourse, getAllCourse, getCourseByUser, getSingleCourse, uploadCourse } from '../controllers/course.controller'
+import { addAnswer, addQuestion, addReplyToReview, addReview, editCourse, getAllCourse, getCourseByUser, getSingleCourse, uploadCourse } from '../controllers/course.controller'
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 
 const courseRouter = express.Router()
@@ -12,4 +12,6 @@ courseRouter.get('/get-courses',getAllCourse)
 courseRouter.get('/get-course-content/:id',isAuthenticated,getCourseByUser)
 courseRouter.put('/add-question',isAuthenticated,addQuestion)
 courseRouter.put('/add-answer',isAuthenticated,addAnswer)
+courseRouter.put('/add-review/:id',isAuthenticated,addReview)
+courseRouter.put('/add-reply',isAuthenticated,authorizeRoles('admin'),addReplyToReview)
 export default courseRouter;

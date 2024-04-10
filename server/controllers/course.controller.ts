@@ -280,3 +280,122 @@ export const addAnswer = AsyncErrorHandler(async(req:Request,res:Response,next:N
         return next(new ErrorHandler(error.message,400))
     }
 })
+
+
+
+// add review 
+interface IAddReviewData {
+    review: string;
+    rating: number;
+    userId: string;
+  }
+  
+  export const addReview = AsyncErrorHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const userCourseList = req.user?.courses;
+  
+        const courseId = req.params.id;
+  
+        // check if courseId already exists in userCourseList based on _id
+        const courseExists = userCourseList?.some(
+          (course: any) => course._id.toString() === courseId.toString()
+        );
+  
+        if (!courseExists) {
+          return next(
+            new ErrorHandler("You are not eligible to access this course", 404)
+          );
+        }
+  
+        const course = await courseModel.findById(courseId);
+  
+        const { review, rating } = req.body as IAddReviewData;
+  
+        const reviewData: any = {
+          user: req.user,
+          rating,
+          comment: review,
+        };
+  
+        course?.reviews.push(reviewData);
+  
+        let avg = 0;
+  
+        course?.reviews.forEach((rev: any) => {
+          avg += rev.rating;
+        });
+  
+        if (course) {
+          course.ratings = avg / course.reviews.length; // one example we have 2 reviews one is 5 another one is 4 so math working like this = 9 / 2  = 4.5 ratings
+        }
+  
+        await course?.save();
+  
+        // await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
+  
+        // create notification
+        // await NotificationModel.create({
+        //   user: req.user?._id,
+        //   title: "New Review Received",
+        //   message: `${req.user?.name} has given a review in ${course?.name}`,
+        // });
+  
+  
+        res.status(200).json({
+          success: true,
+          course,
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+      }
+    }
+  );
+
+// add reply on review only admin can reply that review
+interface IReviewAddData{
+    comment:string,
+    courseId:number,
+    reviewId:string
+}
+export const addReplyToReview = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+
+        const {comment,courseId,reviewId} = req.body as IReviewAddData;
+
+        const course = await courseModel.findById(courseId);
+        // console.log(course)
+        if(!course){
+            return next(new ErrorHandler('Course is not found',400))
+        }
+
+        const review = course?.reviews?.find((rev:any)=>rev._id.toString() === reviewId)
+        // console.log(reviewId)
+        // console.log(course.reviews[0]._id)
+
+        if(!review){
+            return next(new ErrorHandler('Review not found',400))
+        }
+
+        const replyData:any ={
+            user:req.user,
+            comment
+        }
+
+        if(!review.commentReplies){
+            review.commentReplies=[]
+        }
+
+        review.commentReplies?.push(replyData)
+        await course?.save();
+
+        res.status(200).json({
+            success:true,
+            course
+        })
+
+        
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400));
+    }
+})

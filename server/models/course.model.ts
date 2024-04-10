@@ -8,9 +8,11 @@ interface IComment extends Document {
 }
 
 interface IReview extends Document {
-    user: object,
+    user: IUser,
     rating: number,
-    comment: string
+    comment: string,
+    commentReplies : IReview[];
+
 }
 
 interface ILink extends Document {
@@ -55,7 +57,8 @@ const reviewSchema: Schema<IReview> = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    comment: String
+    comment: String,
+    commentReplies :[Object]
 })
 
 const linkSchema: Schema<ILink> = new mongoose.Schema({

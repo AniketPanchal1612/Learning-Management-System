@@ -206,7 +206,6 @@ export const addQuestion = AsyncErrorHandler(async(req:Request,res:Response,next
 
 
 // add answering course question
-
 interface IAnswerData{
     answer:string,
     courseId:string,
@@ -250,6 +249,7 @@ export const addAnswer = AsyncErrorHandler(async(req:Request,res:Response,next:N
     //admin get notification
     if(req.user?._id === question.user._id ){
         //create notify
+
     } else{
         const data = {
             name:question.user.name,

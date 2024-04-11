@@ -23,7 +23,7 @@ const notificationSchema: Schema<INotification> = new mongoose.Schema({
         default:'unread'
     } 
 
-})
+},{timestamps:true})
 
 
 const notificationModel :Model<INotification> = mongoose.model("Notification",notificationSchema)

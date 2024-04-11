@@ -19,9 +19,9 @@ export const createOrder = AsyncErrorHandler(async(req:Request,res:Response,next
 
         const courseExistInUser = user?.courses.find((course:any)=> course._id.toString()=== courseId)
 
-        if(courseExistInUser){
-            return next(new ErrorHandler('You have already purchased this course',400));
-        }
+        // if(courseExistInUser){
+        //     return next(new ErrorHandler('You have already purchased this course',400));
+        // }
 
         const course = await courseModel.findById(courseId);
 

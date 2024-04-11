@@ -133,6 +133,7 @@ export const getAllCourse = AsyncErrorHandler(async (req: Request, res: Response
 
 export const getCourseByUser = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
+
         const userCourseList = req.user?.courses;
         const courseId = req.params.id;
         // console.log(req.user)

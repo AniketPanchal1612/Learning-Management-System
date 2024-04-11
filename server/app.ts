@@ -7,6 +7,7 @@ import userRouter from './routes/user.route';
 import courseRouter from './routes/course.route';
 import orderRoute from './routes/order.route';
 import notificationRoute from './routes/notification.route';
+import analyticsRoute from './routes/analytics.route';
 // const userRoute = require('./routes/user.route')
 
 
@@ -30,6 +31,7 @@ app.use('/api/v1', userRouter)
 app.use('/api/v1',courseRouter)
 app.use('/api/v1',orderRoute)
 app.use('/api/v1',notificationRoute)
+app.use('/api/v1',analyticsRoute)
 
 
 // testing App

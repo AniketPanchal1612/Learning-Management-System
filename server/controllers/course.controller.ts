@@ -2,7 +2,7 @@ import cloudinary from 'cloudinary'
 import { AsyncErrorHandler } from '../middleware/asyncErrorHandler'
 import { NextFunction, Request, Response } from 'express'
 import ErrorHandler from '../config/errorHandler'
-import { createCourse } from '../services/course.service'
+import { createCourse, getAllCoursesService } from '../services/course.service'
 import courseModel from '../models/course.model'
 import { redis } from '../config/redis'
 import mongoose from 'mongoose'
@@ -412,5 +412,16 @@ export const addReplyToReview = AsyncErrorHandler(async(req:Request,res:Response
         
     } catch (error:any) {
         return next(new ErrorHandler(error.message,400));
+    }
+})
+
+
+export const getAllCourses = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+            getAllCoursesService(res);
+                    
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message, 400));
+ 
     }
 })

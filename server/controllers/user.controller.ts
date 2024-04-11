@@ -3,14 +3,14 @@ import ErrorHandler from "../config/errorHandler";
 import { AsyncErrorHandler } from "../middleware/asyncErrorHandler";
 import userModel, { IUser } from "../models/user.model";
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
-import  cloudinary from 'cloudinary'
+import cloudinary from 'cloudinary'
 import dotenv from "dotenv";
 import ejs from 'ejs';
 import path from "path";
 import sendMail from "../config/sendMail";
 import { accessTokenOptions, refreshTokenOptions, sendToken } from "../config/jwt";
 import { redis } from "../config/redis";
-import { getUserById } from "../services/user.service";
+import { getAllUsersService, getUserById } from "../services/user.service";
 dotenv.config();
 
 //register user
@@ -362,50 +362,62 @@ interface IUpdateProfilePicture {
 // update profile picture
 export const updateProfilePicture = AsyncErrorHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const { avatar } = req.body as IUpdateProfilePicture;
-  
-        const userId = req.user?._id;
-  
-        const user = await userModel.findById(userId).select("+password");
-  
-        if (avatar && user) {
-          // if user have one avatar then call this if
-          if (user?.avatar?.public_id) {
-            // first delete the old image
-            await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
-  
-            const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-              folder: "avatars",
-              width: 150,
+        try {
+            const { avatar } = req.body as IUpdateProfilePicture;
+
+            const userId = req.user?._id;
+
+            const user = await userModel.findById(userId).select("+password");
+
+            if (avatar && user) {
+                // if user have one avatar then call this if
+                if (user?.avatar?.public_id) {
+                    // first delete the old image
+                    await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+
+                    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+                        folder: "avatars",
+                        width: 150,
+                    });
+                    user.avatar = {
+                        public_id: myCloud.public_id,
+                        url: myCloud.secure_url,
+                    };
+                } else {
+                    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+                        folder: "avatars",
+                        width: 150,
+                    });
+                    user.avatar = {
+                        public_id: myCloud.public_id,
+                        url: myCloud.secure_url,
+                    };
+                }
+            }
+
+            await user?.save();
+
+            await redis.set(userId, JSON.stringify(user));
+
+            res.status(200).json({
+                success: true,
+                user,
             });
-            user.avatar = {
-              public_id: myCloud.public_id,
-              url: myCloud.secure_url,
-            };
-          } else {
-            const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-              folder: "avatars",
-              width: 150,
-            });
-            user.avatar = {
-              public_id: myCloud.public_id,
-              url: myCloud.secure_url,
-            };
-          }
+        } catch (error: any) {
+            return next(new ErrorHandler(error.message, 400));
         }
-  
-        await user?.save();
-  
-        await redis.set(userId, JSON.stringify(user));
-  
-        res.status(200).json({
-          success: true,
-          user,
-        });
-      } catch (error: any) {
-        return next(new ErrorHandler(error.message, 400));
-      }
     }
-  );
-  
+);
+
+
+
+// get all users - admin
+export const getAllUsers = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+            getAllUsersService(res);
+                    
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message, 400));
+ 
+    }
+})

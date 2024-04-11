@@ -62,3 +62,89 @@ export const createLayout = AsyncErrorHandler(async(req:Request,res:Response,nex
         return next(new ErrorHandler(error.message,400))
     }
 })
+
+
+// edit layout
+
+
+export const editLayout = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {type} = req.body;
+
+        if(type==='Banner'){
+            const {image,title,subTitle} = req.body;
+
+            const bannerData:any = await layoutModel.findOne({type:"Banner"})
+
+            await cloudinary.v2.uploader.destroy(bannerData.image.public_id)
+            const myCloud = await cloudinary.v2.uploader.upload(image,{
+                folder:'lms_layout'
+            }) 
+
+            const banner={
+                image:{
+                    public_id:myCloud.public_id,
+                    url:myCloud.secure_url
+                },
+                title,
+                subTitle
+            }
+            await layoutModel.findByIdAndUpdate(bannerData._id,{banner})
+        }
+
+        if(type==='FAQ'){
+            const {faq} = req.body;
+            const faqItem  = await layoutModel.findOne({type:"FAQ"})
+            const faqItems = await Promise.all(
+                faq.map(async(item:any)=>{
+                    return{
+                        question:item.question,
+                        answer:item.answer
+                    }
+                })
+            )
+            await layoutModel.findByIdAndUpdate(faqItem?._id,{type:"FAQ",faq:faqItems})
+        }
+
+        if(type==='Categories'){
+            const {categories} = req.body;
+            const categoriesData = await layoutModel.findOne({type:"Categories"})
+            const categoryItems = await Promise.all(
+                categories.map(async(item:any)=>{
+                    return {
+                        title:item.title
+                    }
+                })
+            )
+            await layoutModel.findByIdAndUpdate(categoriesData?._id,{type:"Categories",categories:categoryItems})
+        }
+
+        res.status(201).json({
+            success:true,
+            message:'Layout Updated successfully'
+        })
+
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message,400))
+    }
+})
+
+
+
+//get layout by type
+
+// get layout by type
+export const getLayoutByType = AsyncErrorHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { type } = req.body;
+        const layout = await layoutModel.findOne({ type });
+        res.status(201).json({
+          success: true,
+          layout,
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+      }
+    }
+  );

@@ -10,7 +10,7 @@ import path from "path";
 import sendMail from "../config/sendMail";
 import { accessTokenOptions, refreshTokenOptions, sendToken } from "../config/jwt";
 import { redis } from "../config/redis";
-import { getAllUsersService, getUserById } from "../services/user.service";
+import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service";
 dotenv.config();
 
 //register user
@@ -416,6 +416,22 @@ export const getAllUsers = AsyncErrorHandler(async(req:Request,res:Response,next
     try {
             getAllUsersService(res);
                     
+    } catch (error:any) {
+        return next(new ErrorHandler(error.message, 400));
+ 
+    }
+})
+
+//update user role -admin
+interface IUp{
+    id:string,
+    role:string
+}
+export const updateUserRole = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {id,role} = req.body as IUp;
+        updateUserRoleService(res,id,role);
+
     } catch (error:any) {
         return next(new ErrorHandler(error.message, 400));
  

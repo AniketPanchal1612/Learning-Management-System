@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from '../../public/assets/avatar.png'
 import { useSession } from "next-auth/react";
-import { useSocialAuthMutation } from "@/redux/features/auth/authApi";
+import { useLogOutQuery, useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 type Props = {
   open: boolean;
@@ -25,11 +25,15 @@ type Props = {
 const Header: FC<Props> = ({activeItem,setOpen,route,open,setRoute}) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const [logout,setLogout] = useState(false)
 
   const {user} = useSelector((state:any)=> state.auth) ; // user from store
 
   const {data} = useSession() // social auth data
   const [socialAuth,{isSuccess,error}] = useSocialAuthMutation()
+  const {} = useLogOutQuery(undefined,{
+    skip : !logout ?true:false
+  })
   console.log(data)
 
   useEffect(()=>{
@@ -38,8 +42,13 @@ const Header: FC<Props> = ({activeItem,setOpen,route,open,setRoute}) => {
         socialAuth({email:data?.user?.email,name:data?.user?.name, avatar: data?.user?.image})
       }
     }
-    if(isSuccess){
-      toast.success('Login Successful')
+    if(data===null){
+      if(isSuccess){
+        toast.success('Login Successful')
+      }
+    }
+    if(data ===null){
+      setLogout(true)
     }
   },[user,data])
 
@@ -96,9 +105,12 @@ const Header: FC<Props> = ({activeItem,setOpen,route,open,setRoute}) => {
                     <Link href={'/profile'}>
                     <Image
                     className="w-[30px] h-[30px] rounded-full cursor-pointer"
-                    src={user.avatar ? user.avatar : avatar}
+                    src={user.avatar ? user.avatar.url : avatar}
+                    width={30}
+                    height={30} 
                     // onClick={()=>setOpen(true)}
                     alt=''
+                    style={{border: activeItem===5 ? '2px solid yellow':"none"}}
                     />
                     </Link>
                   ):(

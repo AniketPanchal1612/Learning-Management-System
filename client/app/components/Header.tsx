@@ -11,7 +11,7 @@ import Verification from "./Auth/Verification";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from '../../public/assets/avatar.png'
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useLogOutQuery, useSocialAuthMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 type Props = {
@@ -34,8 +34,7 @@ const Header: FC<Props> = ({activeItem,setOpen,route,open,setRoute}) => {
   const {} = useLogOutQuery(undefined,{
     skip : !logout ?true:false
   })
-  console.log(data)
-
+  
   useEffect(()=>{
     if(!user){
       if(data){
@@ -47,14 +46,17 @@ const Header: FC<Props> = ({activeItem,setOpen,route,open,setRoute}) => {
         toast.success('Login Successful')
       }
     }
-    if(data ===null){
-      setLogout(true)
-    }
+    if(data ===null ){
+      // setLogout(true)
+      // signOut()
+  }
   },[user,data])
 
 
 
-  // console.log(user)
+  console.log(user)
+
+  
 
 
   //sticky scrollbar logic

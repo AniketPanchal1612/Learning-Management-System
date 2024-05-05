@@ -277,17 +277,17 @@ interface IUpdateUserInfo {
 // update user info
 export const updateUserInfo = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, email } = req.body as IUpdateUserInfo;
+        // console.log(req.cookies)
+        const { name } = req.body as IUpdateUserInfo;
         const userId = req.user?._id;
         const user = await userModel.findById(userId);
-
-        if (email && user) {
-            const isEmailExist = await userModel.findOne({ email });
-            if (isEmailExist) {
-                return next(new ErrorHandler('Email already exist', 400))
-            }
-            user.email = email; //save new entered email
-        }
+        // if (email && user) {
+        //     const isEmailExist = await userModel.findOne({ email });
+        //     if (isEmailExist) {
+        //         return next(new ErrorHandler('Email already exist', 400))
+        //     }
+        //     user.email = email; //save new entered email
+        // }
 
         if (name && user) {
             user.name = name
@@ -297,7 +297,7 @@ export const updateUserInfo = AsyncErrorHandler(async (req: Request, res: Respon
 
         await redis.set(userId, JSON.stringify(user));
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
             user
         })

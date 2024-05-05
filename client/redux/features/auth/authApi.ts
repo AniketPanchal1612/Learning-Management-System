@@ -23,7 +23,6 @@ export const authApi = apiSlice.injectEndpoints({
                 body:data,
                 credentials:"include" as const
             }),
-
             async onQueryStarted(arg,{queryFulfilled,dispatch}){
                 try {
                     const result = await queryFulfilled
@@ -32,7 +31,7 @@ export const authApi = apiSlice.injectEndpoints({
                             token: result.data.activationToken
                         })
                     )     
-                } catch (error) {
+                } catch (error:any) {
                     console.log(error)
                 }
             }
@@ -59,6 +58,7 @@ export const authApi = apiSlice.injectEndpoints({
             async onQueryStarted(arg,{queryFulfilled,dispatch}){
                 try {
                     const result = await queryFulfilled
+                    // console.log(result)
                     dispatch(
                         userLoggedin({
                             accessToken:result.data.activationToken,

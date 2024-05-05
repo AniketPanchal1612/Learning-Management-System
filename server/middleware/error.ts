@@ -21,7 +21,7 @@ export const ErrorMiddleware = (err:any,req:Request,res:Response, next: NextFunc
     }
 
 
-    //wront jwt token error
+    //wrong jwt token error
     if(err.name ==='JsonWebTokenError'){
         const message = `Json web token is invalid, try again`
         err = new ErrorHandler(message,400)

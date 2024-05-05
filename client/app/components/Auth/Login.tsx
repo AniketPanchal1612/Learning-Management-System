@@ -27,7 +27,6 @@ const schema = Yup.object().shape({
 
 const Login: FC<Props> = ({setRoute,setOpen}) => {
   const [passwordShow, setPasswordShow] = useState(false);
-
   const [login,{isSuccess,isError,data,error}] = useLoginMutation()
 
 
@@ -49,7 +48,6 @@ const Login: FC<Props> = ({setRoute,setOpen}) => {
     }
     if(error){
       if('data' in error){
-
         const errorData =  error as any;
         toast.error(errorData.data.message);
       }

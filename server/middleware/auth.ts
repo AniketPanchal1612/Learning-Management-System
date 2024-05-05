@@ -8,11 +8,14 @@ dotenv.config()
 
 export const isAuthenticated = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
 
-    const access_token = req.cookies.access_token;
-
-    if(!access_token){
-        return next(new ErrorHandler('Please login to access this resource',400))
+    const access_token = req.cookies.access_token as string;
+    console.log(access_token)
+    if (!access_token) {
+      return next(
+        new ErrorHandler("Please login to access this resource", 400)
+      );
     }
+
 
     const decoded = await jwt.verify(access_token, process.env.ACCESS_TOKEN as string) as JwtPayload
 
@@ -23,7 +26,7 @@ export const isAuthenticated = AsyncErrorHandler(async(req:Request,res:Response,
     const user = await redis.get(decoded.id)
 
     if(!user){
-        return next(new ErrorHandler("Please login to access this resources",400));
+        return next(new ErrorHandler("User not found! Please login to access this resources",400));
     }
 
     req.user = JSON.parse(user);

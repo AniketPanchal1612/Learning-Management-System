@@ -220,12 +220,13 @@ export const updateAccessToken = AsyncErrorHandler(async (req: Request, res: Res
     res.cookie("access_token", accessToken, accessTokenOptions)
     res.cookie("refresh_token", refreshToken, refreshTokenOptions)
 
-    await redis.set(user._id,JSON.stringify(user),"EX",604800)
+    await redis.set(user._id, JSON.stringify(user), "EX", 604800)
 
-    res.status(200).json({
-        status: "success",
-        accessToken
-    })
+    next();
+    // res.status(200).json({
+    //     status: "success",
+    //     accessToken
+    // })
 
 
 })
@@ -414,54 +415,64 @@ export const updateProfilePicture = AsyncErrorHandler(
 
 
 // get all users - admin
-export const getAllUsers = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
+export const getAllUsers = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
-            getAllUsersService(res);
-                    
-    } catch (error:any) {
+        getAllUsersService(res);
+
+    } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
- 
+
     }
 })
 
 //update user role -admin
-interface IUp{
-    id:string,
-    role:string
+interface IUp {
+    email: string,
+    role: string
 }
-export const updateUserRole = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
-    try {
-        const {id,role} = req.body as IUp;
-        updateUserRoleService(res,id,role);
-
-    } catch (error:any) {
-        return next(new ErrorHandler(error.message, 400));
+export const updateUserRole = AsyncErrorHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { email, role } = req.body;
+            const isUserExist = await userModel.findOne({ email });
+            if (isUserExist) {
+                const id = isUserExist._id;
+                updateUserRoleService(res, id, role);
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: "User not found",
+                });
+            }
+        } catch (error: any) {
+            return next(new ErrorHandler(error.message, 400));
+        }
     }
-})
+);
 
 
 // delete user -admin
 
-export const deleteUser = AsyncErrorHandler(async(req:Request,res:Response,next:NextFunction)=>{
+export const deleteUser = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const {id} = req.params;
+        const { id } = req.params;
 
         const user = await userModel.findById(id);
-        if(!user){
-            return next(new ErrorHandler('User does not exist',400));
+        if (!user) {
+            return next(new ErrorHandler('User does not exist', 400));
         }
-        await user.deleteOne({id})
+        await user.deleteOne({ id })
 
         await redis.del(id)
 
         res.status(201).json({
-            success:true,
-            message:'User deleted successfully'
+            success: true,
+            message: 'User deleted successfully'
         })
-        
 
-    } catch (error:any) {
+
+    } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
     }
 })

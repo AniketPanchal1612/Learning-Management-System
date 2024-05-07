@@ -36,39 +36,87 @@ export const uploadCourse = AsyncErrorHandler(async (req: Request, res: Response
 
 
 //edit course
-export const editCourse = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
+// export const editCourse = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
 
-    try {
+//     try {
 
+//         const data = req.body;
+
+//         // const thumbnail = req.body;
+
+//         // if (thumbnail) {
+//         //     await cloudinary.v2.uploader.destroy(thumbnail.public_id)
+
+//         //     const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+//         //         folder: "lms_courses"
+//         //     })
+
+//         //     data.thumbnail = {
+//         //         public_id: myCloud.public_id,
+//         //         url: myCloud.secure_url
+//         //     }
+
+//         // }
+
+//         const courseId = req.params.id;
+
+//         const course = await courseModel.findByIdAndUpdate(courseId, { $set: data }, { new: true })
+
+//         res.status(201).json({ success: true, course })
+//     } catch (error: any) {
+//         return next(new ErrorHandler(error.message, 400))
+//     }
+
+// })
+// edit course
+export const editCourse = AsyncErrorHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
         const data = req.body;
-
-        // const thumbnail = req.body;
-
-        // if (thumbnail) {
-        //     await cloudinary.v2.uploader.destroy(thumbnail.public_id)
-
-        //     const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
-        //         folder: "lms_courses"
-        //     })
-
-        //     data.thumbnail = {
-        //         public_id: myCloud.public_id,
-        //         url: myCloud.secure_url
-        //     }
-
-        // }
-
+  
+        const thumbnail = data.thumbnail;
+  
         const courseId = req.params.id;
-
-        const course = await courseModel.findByIdAndUpdate(courseId, { $set: data }, { new: true })
-
-        res.status(201).json({ success: true, course })
-    } catch (error: any) {
-        return next(new ErrorHandler(error.message, 400))
+  
+        const courseData = await courseModel.findById(courseId) as any;
+  
+        if (thumbnail && !thumbnail.startsWith("https")) {
+          await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_id);
+  
+          const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+            folder: "courses",
+          });
+  
+          data.thumbnail = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        }
+  
+        if (thumbnail.startsWith("https")) {
+          data.thumbnail = {
+            public_id: courseData?.thumbnail.public_id,
+            url: courseData?.thumbnail.url,
+          };
+        }
+  
+        const course = await courseModel.findByIdAndUpdate(
+          courseId,
+          {
+            $set: data,
+          },
+          { new: true }
+        );
+        await redis.set(courseId, JSON.stringify(course)); // update course in redis
+        res.status(201).json({
+          success: true,
+          course,
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+      }
     }
-
-})
-
+  );
 
 //get single course - without purchase
 
@@ -105,24 +153,24 @@ export const getSingleCourse = AsyncErrorHandler(async (req: Request, res: Respo
 export const getAllCourse = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        const isCached = await redis.get("allCourses")
-        if (isCached) {
-            const courses = JSON.parse(isCached)
-            res.status(201).json({
-                success: true,
-                courses
-            })
+        // const isCached = await redis.get("allCourses")
+        // if (isCached) {
+        //     const courses = JSON.parse(isCached)
+        //     res.status(201).json({
+        //         success: true,
+        //         courses
+        //     })
 
-        }
-        else {
+        // }
+        // else {
 
             const courses = await courseModel.find().select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links')
-            await redis.set("allCourses", JSON.stringify(courses))
+            // await redis.set("allCourses", JSON.stringify(courses))
             res.status(201).json({
                 success: true,
                 courses
             })
-        }
+        // }
 
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400))

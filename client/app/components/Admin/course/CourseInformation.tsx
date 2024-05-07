@@ -1,6 +1,7 @@
 "use client";
 import { styles } from "@/app/styles/style";
-import React, { FC, useState } from "react";
+import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
+import React, { FC, useEffect, useState } from "react";
 
 type Props = {
   courseInfo: any;
@@ -63,6 +64,16 @@ const CourseInformation: FC<Props> = ({
       reader.readAsDataURL(file);
     }
   };
+
+  const { data } = useGetHeroDataQuery("Categories", {
+    refetchOnMountOrArgChange: true,
+  });
+  const [categories,setCategories] = useState([])
+  useEffect(()=>{
+    if(data){
+      setCategories(data.layout.categories)
+    }
+  },[data])
   
   
   return (
@@ -172,7 +183,7 @@ const CourseInformation: FC<Props> = ({
             <option className="dark:bg-[#000] text-[#fff]" value="">
               Select Category
             </option>
-            {/* {categories &&
+            {categories &&
               categories.map((item: any) => (
                 <option
                   className="dark:bg-[#000] text-[#fff]"
@@ -181,7 +192,7 @@ const CourseInformation: FC<Props> = ({
                 >
                   {item.title}
                 </option>
-              ))} */}
+              ))}
           </select>
         </div>
       </div>

@@ -9,11 +9,29 @@ import courseModel from "../models/course.model"
 import { getAllOrderService, newOrder } from "../services/order.service"
 import sendMail from "../config/sendMail"
 import notificationModel from "../models/notification.model"
+import { redis } from "../config/redis"
+
+require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 
 export const createOrder = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { courseId, payment_info } = req.body as unknown as IOrder;
+        const { courseId, payment_info } = req.body as IOrder;
+
+        if (payment_info) {
+          if ("id" in payment_info) {
+            const paymentIntentId = payment_info.id;
+            const paymentIntent = await stripe.paymentIntents.retrieve(
+              paymentIntentId
+            );
+  
+            if (paymentIntent.status !== "succeeded") {
+              return next(new ErrorHandler("Payment not authorized!", 400));
+            }
+          }
+        }
+
 
         const user = await userModel.findById(req.user?._id);
 
@@ -64,6 +82,8 @@ export const createOrder = AsyncErrorHandler(async (req: Request, res: Response,
 
         user?.courses.push(course?._id);
 
+        await redis.set(req.user?._id,JSON.stringify(user));
+
         await user?.save()
 
         const notification = await notificationModel.create({
@@ -99,3 +119,50 @@ export const getAllOrders = AsyncErrorHandler(async (req: Request, res: Response
 
     }
 })
+
+
+
+export const sendStripePublishableKey = AsyncErrorHandler(
+    async (req: Request, res: Response) => {
+        res.status(200).json({
+            publishablekey: process.env.STRIPE_PUBLISHABLE_KEY,
+        });
+    }
+);
+
+
+
+// new payment
+export const newPayment = AsyncErrorHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const myPayment = await stripe.paymentIntents.create({
+          amount: req.body.amount,
+          currency: "USD",
+          description: "E-learning course services",
+          metadata: {
+            company: "E-Learning",
+          },
+          automatic_payment_methods: {
+            enabled: true,
+          },
+          shipping: {
+            name: "Aniket Panchal",
+            address: {
+              line1: "510 Townsend St",
+              postal_code: "98140",
+              city: "San Francisco",
+              state: "CA",
+              country: "US",
+            },
+          },
+        });
+        res.status(201).json({
+          success: true,
+          client_secret: myPayment.client_secret,
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+      }
+    }
+  );

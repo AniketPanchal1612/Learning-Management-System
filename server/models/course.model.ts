@@ -60,7 +60,7 @@ const reviewSchema: Schema<IReview> = new mongoose.Schema({
     },
     comment: String,
     commentReplies :[Object]
-})
+},{timestamps:true})
 
 const linkSchema: Schema<ILink> = new mongoose.Schema({
     title: String,
@@ -71,7 +71,7 @@ const commentSchema: Schema<IComment> = new mongoose.Schema({
     user: Object,
     question: String,
     questionReplies: [Object]
-})
+},{timestamps:true})
 
 const courseDataSchema: Schema<ICourseData> = new mongoose.Schema({
     title: String,
@@ -99,7 +99,7 @@ const courseSchema: Schema<ICourse> = new mongoose.Schema({
     },
     categories:{
         type:String,
-        required:true
+        // required:true
     },
     price: {
         type: Number,

@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from "express"
 import ErrorHandler from "../config/errorHandler"
 import { IOrder } from "../models/order.model"
 import userModel from "../models/user.model"
-import courseModel from "../models/course.model"
+import courseModel, { ICourse } from "../models/course.model"
 import { getAllOrderService, newOrder } from "../services/order.service"
 import sendMail from "../config/sendMail"
 import notificationModel from "../models/notification.model"
@@ -15,96 +15,195 @@ require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 
-export const createOrder = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { courseId, payment_info } = req.body as IOrder;
+// export const createOrder = AsyncErrorHandler(async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const { courseId, payment_info } = req.body as IOrder;
 
-        if (payment_info) {
-          if ("id" in payment_info) {
-            const paymentIntentId = payment_info.id;
-            const paymentIntent = await stripe.paymentIntents.retrieve(
-              paymentIntentId
-            );
+//         if (payment_info) {
+//           if ("id" in payment_info) {
+//             const paymentIntentId = payment_info.id;
+//             const paymentIntent = await stripe.paymentIntents.retrieve(
+//               paymentIntentId
+//             );
   
-            if (paymentIntent.status !== "succeeded") {
-              return next(new ErrorHandler("Payment not authorized!", 400));
-            }
+//             if (paymentIntent.status !== "succeeded") {
+//               return next(new ErrorHandler("Payment not authorized!", 400));
+//             }
+//           }
+//         }
+
+
+//         const user = await userModel.findById(req.user?._id);
+
+//         const courseExistInUser = user?.courses.find((course: any) => course._id.toString() === courseId)
+
+//         // if(courseExistInUser){
+//         //     return next(new ErrorHandler('You have already purchased this course',400));
+//         // }
+
+//         const course: ICourse | null = await courseModel.findById(courseId);
+
+//         if (!course) {
+//             return next(new ErrorHandler("Course not found", 400));
+//         }
+
+
+//         const data: any = {
+//             courseId: course._id,
+//             userId: user?._id,
+//             payment_info
+//         }
+
+
+//         const mailData = {
+//             order: {
+//                 _id: course._id.toString().slice(0, 6),
+//                 name: course.name,
+//                 price: course.price,
+//                 date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+//             }
+//         }
+
+//         const html = await ejs.renderFile(path.join(__dirname, "../mails/order-confirmation.ejs"), { order: mailData })
+
+//         try {
+//             if (user) {
+//                 await sendMail({
+//                     email: user.email,
+//                     subject: "Order Confirmation",
+//                     template: "order-confirmation.ejs",
+//                     data: mailData
+//                 })
+//             }
+
+//         } catch (error: any) {
+//             return next(new ErrorHandler(error.message, 400))
+//         }
+
+//         user?.courses.push(course?._id);
+
+//         await redis.set(req.user?._id,JSON.stringify(user));
+
+//         await user?.save()
+
+//         const notification = await notificationModel.create({
+//             user: user?._id,
+//             title: "New Order",
+//             message: `You have new order from ${course?.name}`
+//         })
+
+//         course.purchased = course.purchased + 1;
+           
+//         console.log(course)
+
+
+//         // console.log(course.purchased)
+//         await course.save
+
+//         newOrder(data, res, next);
+
+
+//     } catch (error: any) {
+//         return next(new ErrorHandler(error.message, 400))
+//     }
+// })
+
+
+export const createOrder = AsyncErrorHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { courseId, payment_info } = req.body as IOrder;
+
+      if (payment_info) {
+        if ("id" in payment_info) {
+          const paymentIntentId = payment_info.id;
+          const paymentIntent = await stripe.paymentIntents.retrieve(
+            paymentIntentId
+          );
+
+          if (paymentIntent.status !== "succeeded") {
+            return next(new ErrorHandler("Payment not authorized!", 400));
           }
         }
+      }
 
+      const user = await userModel.findById(req.user?._id);
 
-        const user = await userModel.findById(req.user?._id);
+      const courseExistInUser = user?.courses.some(
+        (course: any) => course._id.toString() === courseId
+      );
 
-        const courseExistInUser = user?.courses.find((course: any) => course._id.toString() === courseId)
+      // if (courseExistInUser) {
+      //   return next(
+      //     new ErrorHandler("You have already purchased this course", 400)
+      //   );
+      // }
 
-        // if(courseExistInUser){
-        //     return next(new ErrorHandler('You have already purchased this course',400));
-        // }
+      const course: ICourse | null = await courseModel.findById(courseId);
 
-        const course = await courseModel.findById(courseId);
+      if (!course) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
 
-        if (!course) {
-            return next(new ErrorHandler("Course not found", 400));
+      const data: any = {
+        courseId: course._id,
+        userId: user?._id,
+        payment_info,
+      };
+
+      const mailData = {
+        order: {
+          _id: course._id.toString().slice(0, 6),
+          name: course.name,
+          price: course.price,
+          date: new Date().toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+        },
+      };
+
+      const html = await ejs.renderFile(
+        path.join(__dirname, "../mails/order-confirmation.ejs"),
+        { order: mailData }
+      );
+
+      try {
+        if (user) {
+          await sendMail({
+            email: user.email,
+            subject: "Order Confirmation",
+            template: "order-confirmation.ejs",
+            data: mailData,
+          });
         }
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+      }
 
+      user?.courses.push(course?._id);
 
-        const data: any = {
-            courseId: course._id,
-            userId: user?._id,
-            payment_info
-        }
+      await redis.set(req.user?._id, JSON.stringify(user));
 
+      await user?.save();
 
-        const mailData = {
-            order: {
-                _id: course._id.toString().slice(0, 6),
-                name: course.name,
-                price: course.price,
-                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-            }
-        }
+      await notificationModel.create({
+        user: user?._id,
+        title: "New Order",
+        message: `You have a new order from ${course?.name}`,
+      });
 
-        const html = await ejs.renderFile(path.join(__dirname, "../mails/order-confirmation.ejs"), { order: mailData })
+      course.purchased = course.purchased + 1;
 
-        try {
-            if (user) {
-                await sendMail({
-                    email: user.email,
-                    subject: "Order Confirmation",
-                    template: "order-confirmation.ejs",
-                    data: mailData
-                })
-            }
+      await course.save();
 
-        } catch (error: any) {
-            return next(new ErrorHandler(error.message, 400))
-        }
-
-        user?.courses.push(course?._id);
-
-        await redis.set(req.user?._id,JSON.stringify(user));
-
-        await user?.save()
-
-        const notification = await notificationModel.create({
-            user: user?._id,
-            title: "New Order",
-            message: `You have new order from ${course?.name}`
-        })
-
-        course.purchased = course?.purchased + 1;
-
-
-        // console.log(course.purchased)
-        await course?.save
-
-        newOrder(data, res, next);
-
-
+      newOrder(data, res, next);
     } catch (error: any) {
-        return next(new ErrorHandler(error.message, 400))
+      return next(new ErrorHandler(error.message, 500));
     }
-})
+  }
+);
 
 
 

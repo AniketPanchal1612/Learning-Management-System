@@ -4,4 +4,4 @@ image.png
 plan.txt
 
 /server/.env
-
+/client/.env

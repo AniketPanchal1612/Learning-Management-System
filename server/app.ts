@@ -20,7 +20,7 @@ app.use(express.json({limit:"50mb"})) //body parser
 app.use(cookieParser()) //cookie parser
 
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: ['https://lms-frontend-delta-ivory.vercel.app'],
     credentials:true
 }))
 

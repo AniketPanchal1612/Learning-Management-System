@@ -18,16 +18,16 @@ export const uploadCourse = AsyncErrorHandler(async (req: Request, res: Response
         const data = req.body;
         const thumbnail = data.thumbnail;
 
-        if (thumbnail) {
-            const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
-                folder: 'lms_courses'
-            })
+        // if (thumbnail) {
+        //     const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+        //         folder: 'lms_courses'
+        //     })
 
-            data.thumbnail = {
-                public_id: myCloud.public_id,
-                url: myCloud.secure_url
-            }
-        }
+        //     data.thumbnail = {
+        //         public_id: myCloud.public_id,
+        //         url: myCloud.secure_url
+        //     }
+        // }
         createCourse(data, res, next);
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400));
@@ -155,6 +155,7 @@ export const getAllCourse = AsyncErrorHandler(async (req: Request, res: Response
 
         // const isCached = await redis.get("allCourses")
         // if (isCached) {
+        //     console.log("From Cache")
         //     const courses = JSON.parse(isCached)
         //     res.status(201).json({
         //         success: true,

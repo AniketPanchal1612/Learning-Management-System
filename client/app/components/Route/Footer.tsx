@@ -23,7 +23,7 @@ const Footer = (props: Props) => {
               </li>
               <li>
                 <Link
-                  href="/privacy-policy"
+                  href="/policy"
                   className="text-base text-black dark:text-gray-300 dark:hover:text-white"
                 >
                   Privacy Policy
@@ -58,14 +58,14 @@ const Footer = (props: Props) => {
                   My Account
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/course-dashboard"
                   className="text-base text-black dark:text-gray-300 dark:hover:text-white"
                 >
                   Course Dashboard
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div className="space-y-3">
@@ -73,23 +73,16 @@ const Footer = (props: Props) => {
             <ul className="space-y-4">
               <li>
                 <Link
-                  href="https://www.youtube.com/channel/UCHz6Sne9splmvm-q2w1_HWQ"
+                  href="https://www.linkedin.com/in/aniket-panchal-9476b71b4/"
                   className="text-base text-black dark:text-gray-300 dark:hover:text-white"
                 >
-                  Youtube
+                  LinkedIn
                 </Link>
               </li>
+              
               <li>
                 <Link
-                  href="https://www.instagram.com/shahriar_sajeeb_/"
-                  className="text-base text-black dark:text-gray-300 dark:hover:text-white"
-                >
-                  Instagram
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="https://www.github.com/shahriarsajeeb"
+                  href="https://github.com/AniketPanchal1612"
                   className="text-base text-black dark:text-gray-300 dark:hover:text-white"
                 >
                   github
@@ -99,16 +92,16 @@ const Footer = (props: Props) => {
           </div>
           <div>
             <h3 className="text-[20px] font-[600] text-black dark:text-white pb-3">Contact Info</h3>
-            <p className="text-base text-black dark:text-gray-300 dark:hover:text-white pb-2">
+            {/* <p className="text-base text-black dark:text-gray-300 dark:hover:text-white pb-2">
             Call Us: 1-885-665-2022
             </p>
            
             <p className="text-base text-black dark:text-gray-300 dark:hover:text-white pb-2">
             Address: +7011 Vermont Ave, Los Angeles, CA 90044
-            </p>
+            </p> */}
          
             <p className="text-base text-black dark:text-gray-300 dark:hover:text-white  pb-2">
-            Mail Us: hello@elearning.com
+            Mail Us: aniketpanchal080@gmail.com
             </p>
             
           </div>

@@ -1,8 +1,8 @@
 "use client";
-import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
+import { useGetCourseDetailsQuery } from "../../../redux/features/courses/coursesApi";
 import React, { useEffect, useState } from "react";
 import Loader from "../Loader/Loader";
-import Heading from "@/app/utils/Heading";
+import Heading from "../../utils/Heading";
 import Header from "../Header";
 
 import CourseDetails from "./CourseDetails";
@@ -11,12 +11,12 @@ import CourseDetails from "./CourseDetails";
 //   useGetStripePublishablekeyQuery,
 // } from "@/redux/features/orders/ordersApi";
 import { loadStripe } from "@stripe/stripe-js";
-import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import { useLoadUserQuery } from "../../../redux/features/api/apiSlice";
 import Footer from "../Route/Footer";
 import {
   useCreatePaymentIntentMutation,
   useGetStripePublishablekeyQuery,
-} from "@/redux/features/orders/orderApi";
+} from "../../../redux/features/orders/orderApi";
 
 type Props = {
   id: string;

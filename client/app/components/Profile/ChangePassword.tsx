@@ -1,5 +1,5 @@
-import { styles } from "@/app/styles/style";
-import { useUpdatePasswordMutation } from "@/redux/features/user/userApi";
+import { styles } from "../../styles/style";
+import { useUpdatePasswordMutation } from "../../../redux/features/user/userApi";
 import React, { FC, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 

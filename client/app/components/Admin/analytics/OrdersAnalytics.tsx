@@ -1,5 +1,5 @@
-import { styles } from "@/app/styles/style";
-import { useGetOrdersAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
+import { styles } from "../../../styles/style";
+import { useGetOrdersAnalyticsQuery } from "../../../../redux/features/analytics/analyticsApi";
 import React, { useEffect } from "react";
 import {
   LineChart,

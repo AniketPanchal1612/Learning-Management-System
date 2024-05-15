@@ -3,8 +3,8 @@ import { styles } from "../../../app/styles/style";
 import React, { FC, useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
 import avatarIcon from "../../../public/assets/avatar.png";
-import {  useEditProfileMutation, useUpdateAvatarMutation,} from "@/redux/features/user/userApi";
-import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import {  useEditProfileMutation, useUpdateAvatarMutation,} from "../../../redux/features/user/userApi";
+import { useLoadUserQuery } from "../../../redux/features/api/apiSlice";
 import { toast } from "react-hot-toast";
 
 type Props = {

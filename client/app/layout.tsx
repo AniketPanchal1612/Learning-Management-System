@@ -8,8 +8,12 @@ import { Providers } from "./Provider";
 import { SessionProvider } from "next-auth/react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./components/Loader/Loader";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 // const inter = Inter({ subsets: ['latin'] })
+
+import socketIo from 'socket.io-client'
+const ENDPOINT= process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || ""
+const socketId = socketIo(ENDPOINT,{transports:["websocket"]})
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -26,8 +30,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  console.log(ENDPOINT)
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body
         className={`${poppins.variable} ${josefin.variable} !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-950 dark:to-black duration-500`}
       >
@@ -48,6 +53,11 @@ export default function RootLayout({
 
 const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
+
+  useEffect(()=>{
+    socketId.on("connection",()=>{})
+  },[])
+
   return (
     <>
     {isLoading ? <Loader /> : <>{children} </>

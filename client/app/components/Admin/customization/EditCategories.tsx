@@ -1,10 +1,10 @@
 import {
     useEditLayoutMutation,
     useGetHeroDataQuery,
-  } from "@/redux/features/layout/layoutApi";
+  } from "../../../../redux/features/layout/layoutApi";
   import React, { useEffect, useState } from "react";
   import Loader from "../../Loader/Loader";
-  import { styles } from "@/app/styles/style";
+  import { styles } from "../../../styles/style";
   import { AiOutlineDelete } from "react-icons/ai";
   import { IoMdAddCircleOutline } from "react-icons/io";
   import { toast } from "react-hot-toast";

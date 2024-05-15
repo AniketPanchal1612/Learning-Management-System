@@ -3,7 +3,7 @@ import React from 'react'
 import AdminSidebar from "../../components/Admin/sidebar/AdminSidebar";
 import Heading from '../../../app/utils/Heading';
 import DashboardHeader from '../../../app/components/Admin/DashboardHeader';
-import AllInvoices from '@/app/components/order/AllInvoices';
+import AllInvoices from '../../components/order/AllInvoices';
 
 type Props = {}
 

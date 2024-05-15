@@ -9,8 +9,8 @@ import {
   useDeleteUserMutation,
   useGetAllUsersQuery,
   useUpdateUserRoleMutation,
-} from "@/redux/features/user/userApi";
-import { styles } from "@/app/styles/style";
+} from "../../../../redux/features/user/userApi";
+import { styles } from "../../../styles/style";
 import { toast } from "react-hot-toast";
 
 type Props = {

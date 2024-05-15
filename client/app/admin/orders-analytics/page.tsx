@@ -3,7 +3,7 @@ import React from 'react'
 import AdminSidebar from "../../components/Admin/sidebar/AdminSidebar";
 import Heading from '../../../app/utils/Heading';
 import DashboardHeader from '../../../app/components/Admin/DashboardHeader';
-import OrdersAnalytics from '@/app/components/Admin/analytics/OrdersAnalytics';
+import OrdersAnalytics from '../../components/Admin/analytics/OrdersAnalytics';
 
 type Props = {}
 

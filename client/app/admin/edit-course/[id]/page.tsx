@@ -3,7 +3,7 @@ import Heading from "../../../utils/Heading";
 import AdminSidebar from "../../../components/Admin/sidebar/AdminSidebar";
 import React from "react";
 import CreateCourse from "../../../components/Admin/course/CreateCourse";
-import EditCourse from "@/app/components/Admin/course/EditCourse";
+import EditCourse from "../../../components/Admin/course/EditCourse";
 CreateCourse
 type Props = {};
 

@@ -1,12 +1,12 @@
-import { styles } from "@/app/styles/style";
-import CoursePlayer from "@/app/utils/CoursePlayer";
+import { styles } from "../../styles/style";
+import CoursePlayer from "../../utils/CoursePlayer";
 import {
   useAddAnswerInQuestionMutation,
   useAddNewQuestionMutation,
   useAddReplyInReviewMutation,
   useAddReviewInCourseMutation,
-  // useGetCourseDetailsQuery,
-} from "@/redux/features/courses/coursesApi";
+  useGetCourseDetailsQuery,
+} from "../../../redux/features/courses/coursesApi";
 import Image from "next/image";
 import { format } from "timeago.js";
 import React, { useEffect, useState } from "react";
@@ -19,11 +19,10 @@ import {
 } from "react-icons/ai";
 import { BiMessage } from "react-icons/bi";
 import { VscVerifiedFilled } from "react-icons/vsc";
-import Ratings from "@/app/utils/Ratings";
-import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
-// import socketIO from "socket.io-client";
+import Ratings from "../../utils/Ratings";
+import socketIO from "socket.io-client";
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
-// const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 type Props = {
   data: any;
@@ -108,24 +107,24 @@ const CourseContentMedia = ({
       setQuestion("");
       refetch();
       toast.success("Question Added");
-      //       socketId.emit("notification", {
-      //         title: `New Question Received`,
-      //         message: `You have a new question in ${data[activeVideo].title}`,
-      //         userId: user._id,
-      //       });
+            socketId.emit("notification", {
+              title: `New Question Received`,
+              message: `You have a new question in ${data[activeVideo].title}`,
+              userId: user._id,
+            });
     }
     if (answerSuccess) {
       setAnswer("");
       toast.success("Answer Added");
       
       refetch();
-      // if (user.role !== "admin") {
-      //   socketId.emit("notification", {
-      //     title: `New Reply Received`,
-      //     message: `You have a new question in ${data[activeVideo].title}`,
-      //     userId: user._id,
-      //   });
-      // }
+      if (user.role !== "admin") {
+        socketId.emit("notification", {
+          title: `New Reply Received`,
+          message: `You have a new question in ${data[activeVideo].title}`,
+          userId: user._id,
+        });
+      }
     }
     if (error) {
       if ("data" in error) {
@@ -144,11 +143,11 @@ const CourseContentMedia = ({
           setRating(1);
           courseRefetch();
           toast.success('Review Added')
-          // socketId.emit("notification", {
-          //   title: `New Question Received`,
-          //   message: `You have a new question in ${data[activeVideo].title}`,
-          //   userId: user._id,
-          // });
+          socketId.emit("notification", {
+            title: `New Question Received`,
+            message: `You have a new question in ${data[activeVideo].title}`,
+            userId: user._id,
+          });
         }
         if (reviewError) {
           if ("data" in reviewError) {

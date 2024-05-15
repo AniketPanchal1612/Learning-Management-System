@@ -7,7 +7,7 @@ import { Box, CircularProgress } from "@mui/material";
 import {
   useGetOrdersAnalyticsQuery,
   useGetUsersAnalyticsQuery,
-} from "@/redux/features/analytics/analyticsApi";
+} from "../../../../redux/features/analytics/analyticsApi";
 import OrdersAnalytics from "../analytics/OrdersAnalytics";
 import UserAnalytics from "../analytics/UserAnalytics";
 import AllInvoices from "../../order/AllInvoices";

@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { useTheme } from "next-themes";
-import { useGetAllCoursesQuery } from "@/redux/features/courses/coursesApi";
+import { useGetAllCoursesQuery } from "../../../redux/features/courses/coursesApi";
 
 import { format } from "timeago.js";
 
-import { useGetAllUsersQuery } from "@/redux/features/user/userApi";
+import { useGetAllUsersQuery } from "../../../redux/features/user/userApi";
 import { AiOutlineMail } from "react-icons/ai";
 import Loader from "../Loader/Loader";
-import { useGetAllOrdersQuery } from "@/redux/features/orders/orderApi";
+import { useGetAllOrdersQuery } from "../../../redux/features/orders/orderApi";
 
 type Props = {
   isDashboard?: boolean;

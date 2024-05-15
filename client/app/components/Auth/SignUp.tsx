@@ -10,7 +10,7 @@ import {
 import { FcGoogle } from "react-icons/fc";
 import { styles } from "../../../app/styles/style";
 import { toast } from "react-hot-toast";
-import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import { useRegisterMutation } from "../../../redux/features/auth/authApi";
 
 type Props = {
     setRoute: (route: string) => void;

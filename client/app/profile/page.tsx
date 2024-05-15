@@ -5,6 +5,7 @@ import Protected from "../hooks/useProtected";
 import Heading from "../utils/Heading";
 import Header from "../components/Header";
 import Profile from "../components/Profile/Profile";
+import Footer from "../components/Route/Footer";
 
 type Props = {};
 
@@ -30,7 +31,7 @@ const page: FC<Props> = (props: Props) => {
           route={route}
         />
         <Profile user={user} />
-        {/* <Footer /> */}
+        <Footer />
       </Protected>
     </div>
   );

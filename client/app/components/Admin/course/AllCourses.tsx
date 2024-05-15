@@ -9,10 +9,10 @@ import Link from "next/link";
 import {
   useDeleteCourseMutation,
   useGetAllCoursesQuery,
-} from "@/redux/features/courses/coursesApi";
+} from "../../../../redux/features/courses/coursesApi";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
-import { styles } from "@/app/styles/style";
+import { styles } from "../../../styles/style";
 import toast from "react-hot-toast";
 type Props = {};
 

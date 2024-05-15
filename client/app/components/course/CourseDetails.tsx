@@ -1,14 +1,14 @@
 'use client'
-import { styles } from "@/app/styles/style";
-import CoursePlayer from "@/app/utils/CoursePlayer";
-import Ratings from "@/app/utils/Ratings";
+import { styles } from "../../styles/style";
+import CoursePlayer from "../../utils/CoursePlayer";
+import Ratings from "../../utils/Ratings";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { IoCheckmarkDoneOutline, IoCloseOutline } from "react-icons/io5";
 import { format } from "timeago.js";
 
 import { Elements } from "@stripe/react-stripe-js";
-import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import { useLoadUserQuery } from "../../../redux/features/api/apiSlice";
 import Image from "next/image";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import CourseContentList from "./CourseContentList";

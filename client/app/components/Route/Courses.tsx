@@ -1,4 +1,4 @@
-import { useGetUsersAllCoursesQuery } from "@/redux/features/courses/coursesApi";
+import { useGetUsersAllCoursesQuery } from "../../../redux/features/courses/coursesApi";
 import React, { useEffect, useState } from "react";
 import CourseCard from "../course/CourseCard";
 

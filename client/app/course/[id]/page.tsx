@@ -1,5 +1,5 @@
 'use client'
-import CourseDetailsPage from '@/app/components/course/CourseDetailPage'
+import CourseDetailsPage from '../../components/course/CourseDetailPage'
 import React from 'react'
 
 type Props = {}
